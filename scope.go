@@ -1218,12 +1218,12 @@ func (scope *Scope) addIndex(unique bool, indexName string, column ...string) {
 		columns = append(columns, scope.quoteIfPossible(name))
 	}
 
-	sqlCreate := "CREATE INDEX"
+	sqlCreate := fmt.Sprintf("ALTER TABLE %s ADD INDEX", scope.QuotedTableName())
 	if unique {
-		sqlCreate = "CREATE UNIQUE INDEX"
+		sqlCreate = fmt.Sprintf("ALTER TABLE %s ADD UNIQUE INDEX", scope.QuotedTableName())
 	}
 
-	scope.Raw(fmt.Sprintf("%s %v ON %v(%v) %v", sqlCreate, indexName, scope.QuotedTableName(), strings.Join(columns, ", "), scope.whereSQL())).Exec()
+	scope.Raw(fmt.Sprintf("%s %v(%v) %v", sqlCreate, indexName, strings.Join(columns, ", "), scope.whereSQL())).Exec()
 }
 
 func (scope *Scope) addForeignKey(field string, dest string, onDelete string, onUpdate string) {
